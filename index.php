@@ -11,57 +11,35 @@
 <body>
 
 <div class="container">
+        <!-- LEFT -->
+        <div class="left">
+            <img src="assets/logo.png" alt="logo" class="logo">
 
-    <div class="left">
+            <div class="forgot-box"><img src="assets/peek-water.png" class="peek-water" alt="water mascot"></div>
 
-        <img src="assets/logo.png" class="logo">
+            <form action="login.php" method="POST">
 
-        <h1 class="title">
-            Attendance System
-        </h1>
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" placeholder="Enter your email" required>
 
-        <form action="login.php" method="POST">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" placeholder="Enter your password" required>
 
-            <label>Email</label>
+                <button type="submit" class="create-btn">
+                    Sign In
+                </button>
 
-            <input
-                type="email"
-                name="email"
-                placeholder="Enter email"
-                required
-            >
-
-            <label>Password</label>
-
-            <input
-                type="password"
-                name="password"
-                placeholder="Enter password"
-                required
-            >
-
-            <button type="submit" class="create-btn">
-                Sign In
-            </button>
-
-        </form>
-
-    </div>
-
-    <div class="right">
-
-        <div class="overlay">
-
-            <img
-                src="assets/logo.png"
-                class="big-logo"
-            >
-
+            </form>
         </div>
 
-    </div>
+        <!-- RIGHT -->
+        <div class="right">
+            <div class="overlay">
+                <img src="assets/logo.png" alt="logo" class="logo">
+            </div>
+        </div>
+    </div> 
 
-</div>
 
 </body>
 </html>
