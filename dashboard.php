@@ -52,7 +52,7 @@ ORDER BY id DESC
 </div>
 
     <a href="dashboard.php">Dashboard</a>
-    <a href="activities.php">Activities</a>
+    <a href="activity   .php">Activities</a>
     <a href="#">Attendance</a>
     <a href="#">Reports</a>
     <a href="logout.php" class="logout-link">
