@@ -35,106 +35,129 @@ ORDER BY id DESC
 
 <header class="topbar">
 
-```
-<div class="brand">
-    Attendance System
-</div>
+    <div class="brand">
+        Attendance System
+    </div>
 
-<button id="menuBtn">
-    ☰
-</button>
-```
+    <button id="menuBtn">☰</button>
 
 </header>
 
-<nav id="mobileMenu">
+<div class="overlay-menu" id="overlay"></div>
 
-```
-<a href="dashboard.php">Dashboard</a>
-<a href="activities.php">Activities</a>
-<a href="#">Attendance</a>
-<a href="#">Reports</a>
-<a href="logout.php">Logout</a>
-```
+<nav class="side-menu" id="sideMenu">
+    <div class="menu-header">
+    <img src="assets/logo.png" class="menu-logo">
+    <h3>ISKOLAR</h3>
+</div>
+
+    <a href="dashboard.php">Dashboard</a>
+    <a href="activities.php">Activities</a>
+    <a href="#">Attendance</a>
+    <a href="#">Reports</a>
+    <a href="logout.php" class="logout-link">
+    Logout
+</a>
 
 </nav>
 
 <div class="dashboard">
 
-```
-<section class="dashboard-card">
+    <div class="stats">
 
-    <h1>Activities & Announcements</h1>
+        <div class="stat-card">
+            <h3><?= count($activities) ?></h3>
+            <p>Activities</p>
+        </div>
 
-    <?php if(count($activities) > 0): ?>
+        <div class="stat-card">
+            <h3>0</h3>
+            <p>Attendance Today</p>
+        </div>
 
-        <?php foreach($activities as $activity): ?>
+        <div class="stat-card">
+            <h3>0</h3>
+            <p>Reports</p>
+        </div>
 
-            <div class="activity-row">
+    </div>
 
-                <div>
+    <section class="dashboard-card">
 
-                    <span class="badge">
-                        ACTIVITY
-                    </span>
+        <h1>Activities & Announcements</h1>
 
-                    <h3>
-                        <?= htmlspecialchars($activity['name']) ?>
-                    </h3>
+        <?php if(count($activities) > 0): ?>
+
+            <?php foreach($activities as $activity): ?>
+
+                <div class="activity-row">
+
+                    <div>
+
+                        <span class="badge">
+                            ACTIVITY
+                        </span>
+
+                        <h3>
+                            <?= htmlspecialchars($activity['name']) ?>
+                        </h3>
+
+                    </div>
+
+                    <a
+                        href="activity.php?id=<?= $activity['id'] ?>"
+                        class="view-btn"
+                    >
+                        OPEN
+                    </a>
 
                 </div>
 
-                <a
-                    href="activity.php?id=<?= $activity['id'] ?>"
-                    class="view-btn"
-                >
-                    OPEN
-                </a>
+            <?php endforeach; ?>
 
-            </div>
+        <?php else: ?>
 
-        <?php endforeach; ?>
+            <p>No activities available.</p>
 
-    <?php else: ?>
+        <?php endif; ?>
 
-        <p>No activities available.</p>
+    </section>
 
-    <?php endif; ?>
+    <section class="dashboard-card">
 
-</section>
+        <h2>Recent Attendance</h2>
 
-<section class="dashboard-card">
+        <div class="attendance-row">
+            <strong>20240001</strong>
+            <span>Present</span>
+        </div>
 
-    <h2>Recent Attendance</h2>
+        <div class="attendance-row">
+            <strong>20240002</strong>
+            <span>Present</span>
+        </div>
 
-    <div class="attendance-row">
-        <strong>20240001</strong>
-        <span>Present</span>
-    </div>
-
-    <div class="attendance-row">
-        <strong>20240002</strong>
-        <span>Present</span>
-    </div>
-
-</section>
-```
+    </section>
 
 </div>
 
 <script>
 
-const btn = document.getElementById("menuBtn");
-const menu = document.getElementById("mobileMenu");
+const menuBtn = document.getElementById("menuBtn");
+const sideMenu = document.getElementById("sideMenu");
+const overlay = document.getElementById("overlay");
 
-btn.addEventListener("click", () => {
-    menu.classList.toggle("active");
+menuBtn.addEventListener("click", () => {
+    sideMenu.classList.toggle("show");
+    overlay.classList.toggle("show");
+});
+
+overlay.addEventListener("click", () => {
+    sideMenu.classList.remove("show");
+    overlay.classList.remove("show");
 });
 
 </script>
-
-</body>
-
 
 </body>
 </html>
