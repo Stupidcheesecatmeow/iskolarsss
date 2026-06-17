@@ -2,7 +2,7 @@
 
 session_start();
 
-if(!isset($_SESSION['user_id']))
+if(!isset($_SESSION['logged_in']))
 {
     header("Location: index.php");
     exit;
@@ -25,5 +25,5 @@ if($_SERVER['REQUEST_METHOD'] == 'POST')
     }
 }
 
-header("Location: index.php");
+header("Location: activity.php");
 exit;

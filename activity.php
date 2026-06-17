@@ -1,127 +1,189 @@
 <?php
 
+session_start();
+
+if(!isset($_SESSION['logged_in']))
+{
+    header("Location: index.php");
+    exit;
+}
+
 require "db.php";
 
-if(!isset($_GET['id']))
-{
-    die("Activity not found");
-}
-
-$activityId = $_GET['id'];
-
-$stmt = $db->prepare("
+$activities = $db->query("
 SELECT *
 FROM activities
-WHERE id = ?
-");
-
-$stmt->execute([$activityId]);
-
-$activity = $stmt->fetch(PDO::FETCH_ASSOC);
-
-if(!$activity)
-{
-    die("Activity not found");
-}
-
-$records = $db->prepare("
-SELECT *
-FROM attendance
-WHERE activity_id = ?
 ORDER BY id DESC
-");
-
-$records->execute([$activityId]);
-
-$attendance = $records->fetchAll(PDO::FETCH_ASSOC);
+")->fetchAll(PDO::FETCH_ASSOC);
 
 ?>
 
 <!DOCTYPE html>
-<html>
+
+<html lang="en">
 <head>
 
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title><?= htmlspecialchars($activity['name']) ?></title>
+<title>Activities</title>
 
-<script src="https://unpkg.com/html5-qrcode"></script>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="styles/dashboard.css">
+<link rel="stylesheet" href="styles/activity.css">
 
 </head>
 
 <body>
 
-<h1><?= htmlspecialchars($activity['name']) ?></h1>
+<header class="topbar">
 
-<div id="reader" style="width:500px"></div>
+```
+<div class="brand">
+    Attendance System
+</div>
 
-<h2>Attendance Records</h2>
+<button id="menuBtn">☰</button>
+```
 
-<table border="1" cellpadding="10">
+</header>
 
-<tr>
-    <th>INB</th>
-    <th>Name</th>
-    <th>Cluster</th>
-    <th>Date</th>
-    <th>Time</th>
-</tr>
+<div class="overlay-menu" id="overlay"></div>
 
-<?php foreach($attendance as $row): ?>
+<nav class="side-menu" id="sideMenu">
 
-<tr>
+```
+<div class="menu-header">
 
-<td><?= htmlspecialchars($row['inb_number']) ?></td>
-<td><?= htmlspecialchars($row['fullname']) ?></td>
-<td><?= htmlspecialchars($row['cluster']) ?></td>
-<td><?= htmlspecialchars($row['attendance_date']) ?></td>
-<td><?= htmlspecialchars($row['attendance_time']) ?></td>
+    <img src="assets/logo.png" class="menu-logo">
 
-</tr>
+    <h3>ISKOLAR</h3>
 
-<?php endforeach; ?>
+</div>
 
-</table>
+<a href="dashboard.php">Dashboard</a>
+<a href="activity.php">Activity</a>
+<a href="#">Attendance</a>
+<a href="#">Reports</a>
+
+<a href="logout.php" class="logout-link">
+    Logout
+</a>
+```
+
+</nav>
+
+<div class="dashboard">
+
+```
+<section class="dashboard-card">
+
+    <h1>Activity Management</h1>
+
+    <form
+        action="create_activity.php"
+        method="POST"
+        class="create-form"
+    >
+
+        <input
+            type="text"
+            name="activity_name"
+            placeholder="Enter Activity Name"
+            required
+        >
+
+        <button type="submit">
+            Create Activity
+        </button>
+
+    </form>
+
+</section>
+
+<section class="dashboard-card">
+
+    <h2>Activities</h2>
+
+    <?php if(count($activities) > 0): ?>
+
+        <?php foreach($activities as $activity): ?>
+
+            <div class="activity-row">
+
+                <div>
+
+                    <span class="badge">
+                        ACTIVITY
+                    </span>
+
+                    <h3>
+                        <?= htmlspecialchars($activity['name']) ?>
+                    </h3>
+
+                    <small>
+                        <?= $activity['created_at'] ?>
+                    </small>
+
+                </div>
+
+                <div class="activity-actions">
+
+                    <a
+                        href="attendance.php?id=<?= $activity['id'] ?>"
+                        class="view-btn"
+                    >
+                        OPEN
+                    </a>
+
+                    <a
+                        href="delete_activity.php?id=<?= $activity['id'] ?>"
+                        class="delete-btn"
+                        onclick="return confirm('Delete Activity?')"
+                    >
+                        DELETE
+                    </a>
+
+                </div>
+
+            </div>
+
+        <?php endforeach; ?>
+
+    <?php else: ?>
+
+        <p>No activities available.</p>
+
+    <?php endif; ?>
+
+</section>
+```
+
+</div>
 
 <script>
 
-function onScanSuccess(decodedText)
-{
+const menuBtn = document.getElementById("menuBtn");
+const sideMenu = document.getElementById("sideMenu");
+const overlay = document.getElementById("overlay");
 
-    fetch("save_attendance.php", {
+menuBtn.addEventListener("click", () => {
 
-        method:"POST",
+    sideMenu.classList.toggle("show");
+    overlay.classList.toggle("show");
 
-        headers:{
-            "Content-Type":"application/x-www-form-urlencoded"
-        },
+});
 
-        body:
-        "activity_id=<?= $activityId ?>&qr_data="
-        + encodeURIComponent(decodedText)
+overlay.addEventListener("click", () => {
 
-    })
-    .then(res => res.text())
-    .then(data => {
+    sideMenu.classList.remove("show");
+    overlay.classList.remove("show");
 
-        alert(data);
-
-        location.reload();
-
-    });
-
-}
-
-new Html5QrcodeScanner(
-    "reader",
-    {
-        fps:10,
-        qrbox:250
-    }
-).render(onScanSuccess);
+});
 
 </script>
 
 </body>
 </html>
+

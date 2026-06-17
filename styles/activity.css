@@ -1,0 +1,82 @@
+.create-form{
+    display:flex;
+    gap:15px;
+    margin-bottom:25px;
+}
+
+.create-form input{
+    flex:1;
+    padding:15px;
+    border:none;
+    border-radius:12px;
+    background:rgba(255,255,255,.15);
+    color:white;
+}
+
+.create-form input::placeholder{
+    color:rgba(255,255,255,.7);
+}
+
+#menuBtn{
+    margin-left:auto;
+}
+
+.create-form button{
+    padding:15px 25px;
+    border:none;
+    border-radius:12px;
+    background:#1a3a5f;
+    color:white;
+    font-weight:600;
+    cursor:pointer;
+}
+
+.activity-actions{
+    display:flex;
+    gap:10px;
+}
+
+.delete-btn{
+    text-decoration:none;
+    color:white;
+    background:#8b2d2d;
+    padding:12px 20px;
+    border-radius:12px;
+}
+
+.delete-btn:hover{
+    background:#6d2020;
+}
+
+@media(max-width:768px){
+
+    .create-form{
+        flex-direction:column;
+    }
+
+    .activity-actions{
+        width:100%;
+        flex-direction:column;
+    }
+
+    .view-btn,
+    .delete-btn{
+        width:100%;
+        text-align:center;
+    }
+}
+
+.topbar{
+    position:sticky;
+    top:0;
+
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+
+    width:100%;
+
+    padding:25px 40px;
+
+    z-index:1000;
+}
