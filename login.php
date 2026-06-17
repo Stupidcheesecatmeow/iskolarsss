@@ -6,7 +6,7 @@ $email = $_POST['email'] ?? '';
 $password = $_POST['password'] ?? '';
 
 if(
-    $email === '    ' &&
+    $email === 'Jebi@isko.com' &&
     $password === 'admin123'
 ){
     $_SESSION['logged_in'] = true;
