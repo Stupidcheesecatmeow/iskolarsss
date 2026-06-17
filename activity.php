@@ -64,8 +64,8 @@ ORDER BY id DESC
 
 <a href="dashboard.php">Dashboard</a>
 <a href="activity.php">Activity</a>
-<a href="#">Attendance</a>
-<a href="#">Reports</a>
+<a href="attendance.php">Attendance</a>
+<a href="reports.php">Reports</a>
 
 <a href="logout.php" class="logout-link">
     Logout

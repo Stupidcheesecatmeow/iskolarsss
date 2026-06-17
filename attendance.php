@@ -1,127 +1,241 @@
-    <?php
+<?php
 
-    require "db.php";
+require "db.php";
 
-    if(!isset($_GET['id']))
-    {
-        die("Activity not found");
-    }
+if(!isset($_GET['id']))
+{
+    die("Activity not found");
+}
 
-    $activityId = $_GET['id'];
+$activityId = $_GET['id'];
 
-    $stmt = $db->prepare("
-    SELECT *
-    FROM activities
-    WHERE id = ?
-    ");
+$stmt = $db->prepare("
+SELECT *
+FROM activities
+WHERE id = ?
+");
 
-    $stmt->execute([$activityId]);
+$stmt->execute([$activityId]);
 
-    $activity = $stmt->fetch(PDO::FETCH_ASSOC);
+$activity = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    if(!$activity)
-    {
-        die("Activity not found");
-    }
+if(!$activity)
+{
+    die("Activity not found");
+}
 
-    $records = $db->prepare("
-    SELECT *
-    FROM attendance
-    WHERE activity_id = ?
-    ORDER BY id DESC
-    ");
+$records = $db->prepare("
+SELECT *
+FROM attendance
+WHERE activity_id = ?
+ORDER BY id DESC
+");
 
-    $records->execute([$activityId]);
+$records->execute([$activityId]);
 
-    $attendance = $records->fetchAll(PDO::FETCH_ASSOC);
+$attendance = $records->fetchAll(PDO::FETCH_ASSOC);
 
-    ?>
+$totalAttendance = count($attendance);
 
-    <!DOCTYPE html>
-    <html>
-    <head>
+?>
 
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!DOCTYPE html>
 
-    <title><?= htmlspecialchars($activity['name']) ?></title>
+<html lang="en">
+<head>
 
-    <script src="https://unpkg.com/html5-qrcode"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    </head>
+<title><?= htmlspecialchars($activity['name']) ?></title>
 
-    <body>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
 
-    <h1><?= htmlspecialchars($activity['name']) ?></h1>
+<link rel="stylesheet" href="styles/attendance.css">
 
-    <div id="reader" style="width:500px"></div>
+<script src="https://unpkg.com/html5-qrcode"></script>
+
+</head>
+
+<body>
+
+<header class="topbar">
+
+```
+<div class="brand">
+    <?= htmlspecialchars($activity['name']) ?>
+</div>
+
+<a href="activity.php" class="back-btn">
+    ← Back
+</a>
+```
+
+</header>
+
+<div class="container">
+
+```
+<div class="stats">
+
+    <div class="card total-card">
+
+        <h1><?= $totalAttendance ?></h1>
+
+        <p>Total Attendance</p>
+
+    </div>
+
+    <div class="card">
+
+        <h2>QR Scanner</h2>
+
+        <div id="reader"></div>
+
+    </div>
+
+</div>
+
+<div class="actions">
+
+    <a
+        href="export_csv.php?id=<?= $activityId ?>"
+        class="export-btn"
+    >
+        Export CSV
+    </a>
+
+</div>
+
+<div class="card">
 
     <h2>Attendance Records</h2>
 
-    <table border="1" cellpadding="10">
+    <div class="search-box">
 
-    <tr>
-        <th>INB</th>
-        <th>Name</th>
-        <th>Cluster</th>
-        <th>Date</th>
-        <th>Time</th>
-    </tr>
+        <input
+            type="text"
+            id="searchInput"
+            placeholder="Search INB Number..."
+        >
 
-    <?php foreach($attendance as $row): ?>
+    </div>
 
-    <tr>
+    <div class="table-wrapper">
 
-    <td><?= htmlspecialchars($row['inb_number']) ?></td>
-    <td><?= htmlspecialchars($row['fullname']) ?></td>
-    <td><?= htmlspecialchars($row['cluster']) ?></td>
-    <td><?= htmlspecialchars($row['attendance_date']) ?></td>
-    <td><?= htmlspecialchars($row['attendance_time']) ?></td>
+        <table id="attendanceTable">
 
-    </tr>
+            <thead>
 
-    <?php endforeach; ?>
+                <tr>
+                    <th>INB NO.</th>
+                    <th>NAME</th>
+                    <th>CLUSTER</th>
+                    <th>DATE</th>
+                    <th>TIME</th>
+                </tr>
 
-    </table>
+            </thead>
 
-    <script>
+            <tbody>
 
-    function onScanSuccess(decodedText)
+            <?php foreach($attendance as $row): ?>
+
+                <tr>
+
+                    <td><?= htmlspecialchars($row['inb_number']) ?></td>
+
+                    <td><?= htmlspecialchars($row['fullname']) ?></td>
+
+                    <td><?= htmlspecialchars($row['cluster']) ?></td>
+
+                    <td><?= htmlspecialchars($row['attendance_date']) ?></td>
+
+                    <td><?= htmlspecialchars($row['attendance_time']) ?></td>
+
+                </tr>
+
+            <?php endforeach; ?>
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+```
+
+</div>
+
+<script>
+
+function onScanSuccess(decodedText)
+{
+    fetch("save_attendance.php", {
+
+        method:"POST",
+
+        headers:{
+            "Content-Type":"application/x-www-form-urlencoded"
+        },
+
+        body:
+        "activity_id=<?= $activityId ?>&qr_data=" +
+        encodeURIComponent(decodedText)
+
+    })
+    .then(res => res.text())
+    .then(data => {
+
+        alert(data);
+
+        location.reload();
+
+    });
+}
+
+new Html5QrcodeScanner(
+    "reader",
     {
-
-        fetch("save_attendance.php", {
-
-            method:"POST",
-
-            headers:{
-                "Content-Type":"application/x-www-form-urlencoded"
-            },
-
-            body:
-            "activity_id=<?= $activityId ?>&qr_data="
-            + encodeURIComponent(decodedText)
-
-        })
-        .then(res => res.text())
-        .then(data => {
-
-            alert(data);
-
-            location.reload();
-
-        });
-
+        fps:10,
+        qrbox:250
     }
+).render(onScanSuccess);
 
-    new Html5QrcodeScanner(
-        "reader",
-        {
-            fps:10,
-            qrbox:250
+const searchInput =
+document.getElementById("searchInput");
+
+searchInput.addEventListener("keyup", function(){
+
+    let filter =
+    this.value.toUpperCase();
+
+    let rows =
+    document.querySelectorAll(
+    "#attendanceTable tbody tr"
+    );
+
+    rows.forEach(row => {
+
+        let inb =
+        row.cells[0].textContent;
+
+        if(
+            inb.toUpperCase()
+            .includes(filter)
+        ){
+            row.style.display = "";
         }
-    ).render(onScanSuccess);
+        else{
+            row.style.display = "none";
+        }
 
-    </script>
+    });
 
-    </body>
-    </html>
+});
+
+</script>
+
+</body>
+</html>
