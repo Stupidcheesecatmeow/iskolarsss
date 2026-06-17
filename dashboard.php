@@ -27,95 +27,114 @@ ORDER BY id DESC
 
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
 
-    <link rel="stylesheet" href="styles/style.css">
+    <link rel="stylesheet" href="styles/dashboard.css">
 </head>
 <body>
 
-<div class="container">
+<body>
 
-    <div class="left">
+<header class="topbar">
 
-        <img src="assets/logo.png" alt="logo" class="logo">
+```
+<div class="brand">
+    Attendance System
+</div>
 
-        <h1 class="title">
-            Attendance Management
-        </h1>
+<button id="menuBtn">
+    ☰
+</button>
+```
 
-        <form action="create_activity.php" method="POST">
+</header>
 
-            <label>Activity Name</label>
+<nav id="mobileMenu">
 
-            <input
-                type="text"
-                name="activity_name"
-                placeholder="Enter activity name"
-                required
-            >
+```
+<a href="dashboard.php">Dashboard</a>
+<a href="activities.php">Activities</a>
+<a href="#">Attendance</a>
+<a href="#">Reports</a>
+<a href="logout.php">Logout</a>
+```
 
-            <button type="submit" class="create-btn">
-                Create Activity
-            </button>
+</nav>
 
-        </form>
+<div class="dashboard">
 
-        <div class="activities">
+```
+<section class="dashboard-card">
 
-            <h3>Activities</h3>
+    <h1>Activities & Announcements</h1>
 
-            <?php if(count($activities) > 0): ?>
+    <?php if(count($activities) > 0): ?>
 
-                <?php foreach($activities as $activity): ?>
+        <?php foreach($activities as $activity): ?>
 
-                    <div class="activity-card">
+            <div class="activity-row">
 
-                        <div>
-                            <strong>
-                                <?= htmlspecialchars($activity['name']) ?>
-                            </strong>
-                        </div>
+                <div>
 
-                        <a
-                            href="activity.php?id=<?= $activity['id'] ?>"
-                            class="open-btn"
-                        >
-                            Open
-                        </a>
+                    <span class="badge">
+                        ACTIVITY
+                    </span>
 
-                    </div>
+                    <h3>
+                        <?= htmlspecialchars($activity['name']) ?>
+                    </h3>
 
-                <?php endforeach; ?>
+                </div>
 
-            <?php else: ?>
+                <a
+                    href="activity.php?id=<?= $activity['id'] ?>"
+                    class="view-btn"
+                >
+                    OPEN
+                </a>
 
-                <p>No activities yet.</p>
+            </div>
 
-            <?php endif; ?>
+        <?php endforeach; ?>
 
-        </div>
+    <?php else: ?>
 
-        <br>
+        <p>No activities available.</p>
 
-        <a href="logout.php" class="open-btn">
-            Logout
-        </a>
+    <?php endif; ?>
 
+</section>
+
+<section class="dashboard-card">
+
+    <h2>Recent Attendance</h2>
+
+    <div class="attendance-row">
+        <strong>20240001</strong>
+        <span>Present</span>
     </div>
 
-    <div class="right">
-
-        <div class="overlay">
-
-            <img
-                src="assets/logo.png"
-                alt="logo"
-                class="big-logo"
-            >
-
-        </div>
-
+    <div class="attendance-row">
+        <strong>20240002</strong>
+        <span>Present</span>
     </div>
+
+</section>
+```
 
 </div>
+
+<script>
+
+const btn = document.getElementById("menuBtn");
+const menu = document.getElementById("mobileMenu");
+
+btn.addEventListener("click", () => {
+    menu.classList.toggle("active");
+});
+
+</script>
+
+</body>
+
 
 </body>
 </html>
