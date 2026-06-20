@@ -127,37 +127,48 @@ $totalAttendance = count($attendance);
 
             <thead>
 
-                <tr>
-                    <th>INB NO.</th>
-                    <th>NAME</th>
-                    <th>CLUSTER</th>
-                    <th>DATE</th>
-                    <th>TIME</th>
-                </tr>
+    <tr>
+        <th>INB NO.</th>
+        <th>NAME</th>
+        <th>CLUSTER</th>
+        <th>DATE</th>
+        <th>TIME IN</th>
+        <th>TIME OUT</th>
+    </tr>
 
-            </thead>
+</thead>
 
-            <tbody>
+<tbody>
 
-            <?php foreach($attendance as $row): ?>
+<?php foreach($attendance as $row): ?>
 
-                <tr>
+    <tr>
 
-                    <td><?= htmlspecialchars($row['inb_number']) ?></td>
+        <td><?= htmlspecialchars($row['inb_number']) ?></td>
 
-                    <td><?= htmlspecialchars($row['fullname']) ?></td>
+        <td><?= htmlspecialchars($row['fullname']) ?></td>
 
-                    <td><?= htmlspecialchars($row['cluster']) ?></td>
+        <td><?= htmlspecialchars($row['cluster']) ?></td>
 
-                    <td><?= htmlspecialchars($row['attendance_date']) ?></td>
+        <td><?= htmlspecialchars($row['attendance_date']) ?></td>
 
-                    <td><?= htmlspecialchars($row['attendance_time']) ?></td>
+        <td>
+            <?= !empty($row['time_in'])
+                ? date("h:i A", strtotime($row['time_in']))
+                : '-' ?>
+        </td>
 
-                </tr>
+        <td>
+            <?= !empty($row['time_out'])
+                ? date("h:i A", strtotime($row['time_out']))
+                : '-' ?>
+        </td>
 
-            <?php endforeach; ?>
+    </tr>
 
-            </tbody>
+<?php endforeach; ?>
+
+</tbody>
 
         </table>
 

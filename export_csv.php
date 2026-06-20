@@ -9,17 +9,17 @@ if(!isset($_GET['id']))
 
 $activityId = $_GET['id'];
 
-$stmt = $db->prepare("
-SELECT name
+$activity = $db->prepare("
+SELECT *
 FROM activities
 WHERE id = ?
 ");
 
-$stmt->execute([$activityId]);
+$activity->execute([$activityId]);
 
-$activity = $stmt->fetch(PDO::FETCH_ASSOC);
+$activityData = $activity->fetch(PDO::FETCH_ASSOC);
 
-if(!$activity)
+if(!$activityData)
 {
     die("Activity not found");
 }
@@ -28,40 +28,30 @@ $records = $db->prepare("
 SELECT *
 FROM attendance
 WHERE activity_id = ?
-ORDER BY id ASC
+ORDER BY fullname ASC
 ");
 
 $records->execute([$activityId]);
 
-$attendance = $records->fetchAll(PDO::FETCH_ASSOC);
-
-$filename =
-preg_replace(
-'/[^A-Za-z0-9\-]/',
-'_',
-$activity['name']
-);
-
 header('Content-Type: text/csv');
 header(
-'Content-Disposition: attachment; filename="' .
-$filename .
-'_attendance.csv"'
+    'Content-Disposition: attachment; filename="' .
+    preg_replace('/[^A-Za-z0-9_-]/', '_', $activityData['name']) .
+    '_attendance.csv"'
 );
 
-$output = fopen('php://output', 'w');
+$output = fopen("php://output", "w");
 
 fputcsv($output, [
-
     'INB Number',
     'Full Name',
     'Cluster',
     'Date',
-    'Time'
-
+    'Time In',
+    'Time Out'
 ]);
 
-foreach($attendance as $row)
+while($row = $records->fetch(PDO::FETCH_ASSOC))
 {
     fputcsv($output, [
 
@@ -69,11 +59,17 @@ foreach($attendance as $row)
         $row['fullname'],
         $row['cluster'],
         $row['attendance_date'],
-        $row['attendance_time']
+
+        !empty($row['time_in'])
+            ? date("h:i A", strtotime($row['time_in']))
+            : '',
+
+        !empty($row['time_out'])
+            ? date("h:i A", strtotime($row['time_out']))
+            : ''
 
     ]);
 }
 
 fclose($output);
 exit;
-?>
