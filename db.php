@@ -18,16 +18,17 @@ try {
     // Attendance
 
     $db->exec("
-        CREATE TABLE IF NOT EXISTS attendance(
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            activity_id INTEGER,
-            fullname TEXT,
-            inb_number TEXT,
-            cluster TEXT,
-            attendance_date TEXT,
-            attendance_time TEXT
-        )
-    ");
+    CREATE TABLE IF NOT EXISTS attendance (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        activity_id INTEGER,
+        fullname TEXT,
+        inb_number TEXT,
+        cluster TEXT,
+        attendance_date TEXT,
+        time_in TEXT,
+        time_out TEXT
+    );
+");
 
 } catch(PDOException $e){
 

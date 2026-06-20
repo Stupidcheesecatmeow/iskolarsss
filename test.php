@@ -2,12 +2,12 @@
 
 require "db.php";
 
-$result = $db->query("
-SELECT *
-FROM activities
-");
+$result = $db->query("PRAGMA table_info(attendance)");
 
-foreach($result as $row)
-{
-    echo $row['id'] . " - " . $row['name'] . "<br>";
+echo "<pre>";
+
+foreach($result as $row){
+    print_r($row);
 }
+
+echo "</pre>";

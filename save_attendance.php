@@ -24,42 +24,60 @@ SELECT *
 FROM attendance
 WHERE activity_id = ?
 AND inb_number = ?
+AND attendance_date = ?
+LIMIT 1
 ");
 
 $check->execute([
     $activityId,
-    $inbNumber
+    $inbNumber,
+    $date
 ]);
 
-if($check->fetch())
+$record = $check->fetch(PDO::FETCH_ASSOC);
+
+if(!$record)
 {
-    die("Already Recorded");
+    $stmt = $db->prepare("
+    INSERT INTO attendance(
+        activity_id,
+        fullname,
+        inb_number,
+        cluster,
+        attendance_date,
+        time_in,
+        time_out
+    )
+    VALUES(?,?,?,?,?,?,?)
+    ");
+
+    $stmt->execute([
+        $activityId,
+        $fullname,
+        $inbNumber,
+        $cluster,
+        $date,
+        $time,
+        null
+    ]);
+
+    die('TIME IN RECORDED');
 }
 
-$stmt = $db->prepare("
-INSERT INTO attendance(
+if(empty($record['time_out']))
+{
+    $update = $db->prepare("
+    UPDATE attendance
+    SET time_out = ?
+    WHERE id = ?
+    ");
 
-    activity_id,
-    fullname,
-    inb_number,
-    cluster,
-    attendance_date,
-    attendance_time
+    $update->execute([
+        $time,
+        $record['id']
+    ]);
 
-)
+    die('TIME OUT RECORDED');
+}
 
-VALUES(?,?,?,?,?,?)
-");
-
-$stmt->execute([
-
-    $activityId,
-    $fullname,
-    $inbNumber,
-    $cluster,
-    $date,
-    $time
-
-]);
-
-echo "Attendance Saved";
+die('ALREADY TIMED OUT');
